@@ -1,11 +1,13 @@
 package com.pluralsight;
 
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.regex.Pattern;
 
 public class Ledger {
 
@@ -65,23 +67,40 @@ public class Ledger {
 // ~~~~~~~~~~~~~~~~~~~ ADD DEPOSIT  ~~~~~~~~~~~~~~~~~~~~~~~~
 
     public static void addDeposit(){
-
         try{
             System.out.println("\n~~~~ You have chosen to add a deposit ~~~~\n");
             System.out.print("Please provide the vendor: ");
             String vendor = scanner.nextLine().trim();
             System.out.print("Please provide the price: ");
-            Double price = scanner.nextDouble();
-
+            double price = scanner.nextDouble();
             // clear left over in buffer
             scanner.nextLine();
-            String formattedString = "|" + vendor + "|" + price;
-            BufferedWriter writer = new BufferedWriter(new FileWriter("transactions.csv"));
-            writer.write(getDateAndTime() + formattedString);
+            String formattedString = getDateAndTime() + "|" + vendor + "|" + price;
+            // create file and write using buffer reader set append to true so file is not overwritten
+            BufferedWriter writer = new BufferedWriter(new FileWriter("transactions.csv", true));
+            // file.exists(): This checks if the file does not exist.
+            // file.length() == 0: This checks if the file exists but its length is 0, meaning it's empty.
+            File file = new File("transactions.csv");
+            if(!file.exists() || file.length() == 0){
+                writer.write("date|time|description|vendor|amount");
+                writer.newLine();
+            }
+            writer.write(formattedString);
+            // Add a new line in the file to separate different entries or sections
+            writer.newLine();
+            // get date and time for object creation
+            String unformattedForObject = getDateAndTime();
+            String[] dateAndTime = unformattedForObject.split(Pattern.quote("|"));
+            Transaction itemToAdd = new Transaction(dateAndTime[0],dateAndTime[1],vendor,price);
+            // add transaction object to array list
+            transactions.add(itemToAdd);
+            // writes to file immediately without having to close out file
+            writer.flush();
             // close writer
             writer.close();
-            System.out.println("\n**** Item added successfully ****");
-
+            // The comma in the format string is used to include a thousand separator in the price for readability.
+            System.out.printf("\n$%,.2f spent on %s added on %s",price,vendor,getDateAndTime());
+            System.out.println("\n**** Transaction added successfully ****");
         }catch(Exception e){
             scanner.nextLine();
             System.out.println("\n**** Error adding deposit please try again. ****");
@@ -100,6 +119,9 @@ public class Ledger {
 
     public static void displayLedger(){
         // display newest transactions first for all !
+//        for(Transaction item : transactions){
+//            System.out.println(item);
+//        }
         System.out.println("displayAllEntries");
         System.out.println("displayDeposits");
         System.out.println("displayPayments");

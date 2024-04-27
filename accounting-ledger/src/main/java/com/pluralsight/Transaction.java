@@ -13,7 +13,7 @@ such as date, time, vendor, and price.
  typically the class name followed by the memory address of the object.
 
  */
-public class transaction {
+public class Transaction {
 
     // attributes for class
     private String date;
@@ -22,7 +22,7 @@ public class transaction {
     private double price;
 
     // This constructor initializes a transaction object with the provided date, time, vendor, and price.
-    public transaction(String date, String time, String vendor, double price) {
+    public Transaction(String date, String time, String vendor, double price) {
         this.date = date;
         this.time = time;
         this.vendor = vendor;

@@ -2,7 +2,7 @@ package com.pluralsight;
 /*
 
 - This class creates a transactions object by storing private attributes
-such as date, time, vendor, and price.
+such as date, time, description, vendor, and price.
 
 - Keeping attributes private ensures data encapsulation
  and control over access of data remains in the class itself.
@@ -18,18 +18,20 @@ public class Transaction {
     // attributes for class
     private String date;
     private String time;
+    private String description;
     private String vendor;
     private double price;
 
     // This constructor initializes a transaction object with the provided date, time, vendor, and price.
-    public Transaction(String date, String time, String vendor, double price) {
+
+    public Transaction(String date, String time, String description, String vendor, double price) {
         this.date = date;
         this.time = time;
+        this.description = description;
         this.vendor = vendor;
         this.price = price;
     }
 
-    // below are all the getters and setters
     public String getDate() {
         return date;
     }
@@ -44,6 +46,14 @@ public class Transaction {
 
     public void setTime(String time) {
         this.time = time;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public String getVendor() {
@@ -64,12 +74,12 @@ public class Transaction {
 
     @Override
     public String toString() {
-        return "transaction{" +
+        return "Transaction{" +
                 "date='" + date + '\'' +
                 ", time='" + time + '\'' +
+                ", description='" + description + '\'' +
                 ", vendor='" + vendor + '\'' +
                 ", price=" + price +
                 '}';
     }
-
 }

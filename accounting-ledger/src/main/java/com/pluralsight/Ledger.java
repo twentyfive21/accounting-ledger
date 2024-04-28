@@ -38,7 +38,6 @@ public class Ledger {
 // ~~~~~~~~~~~~~~~~~~ DISPLAY HOME SCREEN ~~~~~~~~~~~~~~~~~
 
     public static void displayHomeScreen(){
-
         System.out.println("\n~~~~~~~~~ Welcome to the Account Ledger Application ~~~~~~~~~");
         System.out.println("~ We are pleased you have chosen us for your business needs. ~");
         System.out.println("Please select what you would like to do today");
@@ -51,9 +50,9 @@ public class Ledger {
         String choice = scanner.nextLine().toLowerCase();
 
         switch (choice){
-            case "d": addDeposit();
+            case "d": getUserInput("deposit");
                 break;
-            case "p": makePayment();
+            case "p": getUserInput("payment");
                 break;
             case "l": displayLedger();
                 break;
@@ -64,18 +63,45 @@ public class Ledger {
                 break;
         }
     }
-// ~~~~~~~~~~~~~~~~~~~ ADD DEPOSIT  ~~~~~~~~~~~~~~~~~~~~~~~~
 
-    public static void addDeposit(){
+// ~~~~~~~~~~~~~~~~~~~ FORMAT INPUT ~~~~~~~~~~~~~~~~~~~~~~~~
+    public static void getUserInput(String type){
         try{
-            System.out.println("\n~~~~ You have chosen to add a deposit ~~~~\n");
+            System.out.printf("\n~~~~ You have chosen to add a %s ~~~~\n", type);
+            System.out.print("Please provide the description: ");
+            String description = scanner.nextLine().trim();
             System.out.print("Please provide the vendor: ");
             String vendor = scanner.nextLine().trim();
             System.out.print("Please provide the price: ");
-            double price = scanner.nextDouble();
-            // clear left over in buffer
+            double price = 0.00;
+            if(type.equals("deposit")){
+                price = scanner.nextDouble();
+            } else {
+                price = scanner.nextDouble();
+                // turn double negative
+                price = -price;
+            }
+            // clear left over in buffer if try is successful
             scanner.nextLine();
-            String formattedString = getDateAndTime() + "|" + vendor + "|" + price;
+            // get date and time for object creation
+            String unformattedForObject = getDateAndTime();
+            String[] dateAndTime = unformattedForObject.split(Pattern.quote("|"));
+            Transaction item = new Transaction(dateAndTime[0],dateAndTime[1],description,vendor,price);
+            // add transaction object to array list
+            transactions.add(item);
+            writeToFile(description,vendor,price);
+        } catch (Exception e){
+            System.out.println("\n**** Error adding deposit please try again. ****");
+            // next line handles the error and clears buffer since try failed
+            scanner.nextLine();
+            getUserInput(type);
+        }
+    }
+
+    // ~~~~~~~~~~~~~~~~~~~ FORMAT TRANSACTION  ~~~~~~~~~~~~~~~~~~~~~~~~
+    public static void writeToFile(String description, String vendor, double price){
+        try{
+            String fmtString = String.format("%s|%s|%s|%.2f",getDateAndTime(),description, vendor, price);
             // create file and write using buffer reader set append to true so file is not overwritten
             BufferedWriter writer = new BufferedWriter(new FileWriter("transactions.csv", true));
             // file.exists(): This checks if the file does not exist.
@@ -85,34 +111,20 @@ public class Ledger {
                 writer.write("date|time|description|vendor|amount");
                 writer.newLine();
             }
-            writer.write(formattedString);
+            writer.write(fmtString);
             // Add a new line in the file to separate different entries or sections
             writer.newLine();
-            // get date and time for object creation
-            String unformattedForObject = getDateAndTime();
-            String[] dateAndTime = unformattedForObject.split(Pattern.quote("|"));
-            Transaction itemToAdd = new Transaction(dateAndTime[0],dateAndTime[1],vendor,price);
-            // add transaction object to array list
-            transactions.add(itemToAdd);
-            // writes to file immediately without having to close out file
+            // writes to file immediately without having to close out file to view data & close after
             writer.flush();
-            // close writer
             writer.close();
             // The comma in the format string is used to include a thousand separator in the price for readability.
             System.out.printf("\n$%,.2f spent on %s added on %s",price,vendor,getDateAndTime());
             System.out.println("\n**** Transaction added successfully ****");
         }catch(Exception e){
-            scanner.nextLine();
-            System.out.println("\n**** Error adding deposit please try again. ****");
+            System.out.println("\n**** Error Wrting to file ****");
         }
         // take user back home
         displayHomeScreen();
-    }
-
-// ~~~~~~~~~~~~~~~~~~~ MAKE PAYMENT  ~~~~~~~~~~~~~~~~~~~~~~~~
-
-    public static void makePayment(){
-
     }
 
 // ~~~~~~~~~~~~~~~~~~~ DISPLAY LEDGER  ~~~~~~~~~~~~~~~~~~~~~~~~

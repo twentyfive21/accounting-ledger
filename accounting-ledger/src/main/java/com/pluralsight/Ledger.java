@@ -159,7 +159,7 @@ public class Ledger {
 
     public static void displayAllEntries(){
         // display newest transactions first for all !
-        transactions.sort(Comparator.comparing(Transaction::getDate));
+        transactions.sort(Comparator.comparing(Transaction::getDate).reversed());
         System.out.println("\n~~~~~~ Start of all the current transactions ~~~~~~");
             for(Transaction item : transactions){
                 System.out.println(item);
@@ -172,7 +172,7 @@ public class Ledger {
 // ~~~~~~~~~~~~~~~~~~~~~ DISPLAY DEPOSITS OR NEGATIVE TRANSACTIONS ~~~~~~~~~~~~~~~~~~~~~~~
 
     public static void displayChosenEntries(String choice){
-        transactions.sort(Comparator.comparing(Transaction::getDate));
+        transactions.sort(Comparator.comparing(Transaction::getDate).reversed());
         System.out.printf("\n~~~~~~ Start of all the %s transactions ~~~~~~\n", choice);
 
         if(choice.equals("deposit")){

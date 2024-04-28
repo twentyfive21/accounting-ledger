@@ -214,38 +214,101 @@ public class Ledger {
         String choice = scanner.nextLine();
 
         switch (choice){
-            case "1": displayMonthToDate();
+            case "1": displayMonthReport("current");
                 break;
-            case "2": System.out.println("displayPreviousMonth");
+            case "2": displayMonthReport("previous");
                 break;
-            case "3": System.out.println("displayYearToDate");
+            case "3": displayYearReport("current");
                 break;
-            case "4":System.out.println("displayPreviousYear");
+            case "4": displayYearReport("previous");
                 break;
-            case "5":System.out.println("searchByVendor");
+            case "5": searchByVendor();
                 break;
             case "0": displayLedger();
                 break;
             default: System.out.println("\n**** Error invalid choice ****\n");
-                displayHomeScreen();
+                displayReports();
                 break;
         }
 
     }
 
 // ~~~~~~~~~~~~~~~~~~~ ALL REPORT METHODS START  ~~~~~~~~~~~~~~~~~~~~~~~~
-    // EVERY REPORT METHOD HERE NEEDS TO GO BACK TO REPORTS
 
-    public static void displayMonthToDate(){
-        LocalDate today = LocalDate.now();
-        //(TODO)
-        System.out.println(today);
+    // ************* MONTH TO DATE && PREVIOUS REPORT ****************
+    public static void displayMonthReport(String type){
+        // get current day
+        LocalDate today;
+        if(type.equals("current")){
+            // current month choice
+             today = LocalDate.now();
+        } else {
+            // previous month choice
+            today = LocalDate.now().minusMonths(1);
+        }
+
+        // get beginning of month
+        LocalDate monthFromNow = today.withDayOfMonth(1);
+        System.out.printf("\n~~~~ All transactions from %s to %s ~~~~\n",monthFromNow, today);
+
+        // check for dates matching the range
+        transactions.sort(Comparator.comparing(Transaction::getDate).reversed());
+        for(Transaction currentDate : transactions){
+            // parse the date to localDate since it is saved as a string in the object
+            LocalDate date = LocalDate.parse(currentDate.getDate());
+            // Adjusting the date range to include all days within the range (inclusive)
+            boolean startDate = date.isAfter(monthFromNow.minusDays(1));
+            boolean endDate = date.isBefore(today.plusDays(1));
+            if(startDate && endDate){
+                System.out.println(currentDate);
+            }
+        }
+        System.out.printf("\n~~~~ End of transactions from %s to %s ~~~~\n",monthFromNow, today);
+        System.out.println();
         displayReports();
     }
 
-// ~~~~~~~~~~~~~~~~~~~~~ ALL REPORT METHODS END  ~~~~~~~~~~~~~~~~~~~~~~~~
+    // ************* YEAR TO DATE && PREVIOUS YEAR REPORT ****************
+    // (TODO)
+    public static void displayYearReport(String type){
+        LocalDate endOfYear;
+        LocalDate startOfYear;
+        // show current year to date
+        if(type.equals("current")){
+            endOfYear = LocalDate.now();
+            startOfYear = LocalDate.now().withDayOfMonth(1).withMonth(1);
+        } else {
+            // 01-01-2023 to 12-31-2023
+            startOfYear = LocalDate.now().minusYears(1).withDayOfMonth(1).withMonth(1);
+            endOfYear = LocalDate.now().minusYears(1).withMonth(12).withDayOfMonth(31);
+        }
 
-// ~~~~~~~~~~~~~~~~~~~ LOAD INVENTORY  ~~~~~~~~~~~~~~~~~~~~~~~~
+        transactions.sort(Comparator.comparing(Transaction::getDate).reversed());
+        System.out.printf("\n~~~~ All transactions from %s to %s ~~~~\n",startOfYear, endOfYear);
+        for(Transaction currentDate : transactions){
+            LocalDate date = LocalDate.parse(currentDate.getDate());
+            boolean startYear = date.isAfter(startOfYear.minusDays(1));
+            boolean endYear = date.isBefore(endOfYear.plusDays(1));
+
+            if(startYear && endYear){
+                System.out.println(currentDate);
+            }
+        }
+        System.out.printf("\n~~~~ End of transactions from %s to %s ~~~~\n",startOfYear, endOfYear);
+        // re-run program
+        displayReports();
+    }
+
+    // ********************* SEARCH BY VENDOR REPORT *********************
+    // (TODO)
+    public static void searchByVendor(){
+        transactions.sort(Comparator.comparing(Transaction::getDate).reversed());
+    }
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~ ALL REPORT METHODS END  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ LOAD INVENTORY  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     public static void loadInventory(){
         try{

@@ -112,9 +112,9 @@ public class Ledger {
                 writer.write("date|time|description|vendor|amount");
                 writer.newLine();
             }
+            writer.newLine();
             writer.write(fmtString);
             // Add a new line in the file to separate different entries or sections
-            writer.newLine();
             // writes to file immediately without having to close out file to view data & close after
             writer.flush();
             writer.close();

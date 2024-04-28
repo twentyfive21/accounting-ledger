@@ -317,9 +317,35 @@ public class Ledger {
     }
 
     // ********************* SEARCH BY VENDOR REPORT *********************
-    // (TODO)
+
     public static void searchByVendor(){
+        // Prompt the user for input
+        System.out.println("~~~~ You have chosen to search by vendor ~~~~");
+        System.out.print("Please provide vendor: ");
+        // Get user input and convert it to lowercase for case-insensitive comparison
+        String input = scanner.nextLine().trim().toLowerCase();
+        // Sort transactions in descending order based on date
         transactions.sort(Comparator.comparing(Transaction::getDate).reversed());
+        // Initialize a boolean flag to track if any matching vendors are found
+        boolean match = false;
+        System.out.printf("\n~~~~ Search results for %s ~~~~\n", input);
+        // Iterate over transactions to search for the provided vendor
+        for(Transaction vendor : transactions){
+            String item = vendor.getVendor().toLowerCase();
+            // Check if the vendor name contains the user-provided input
+            if(item.contains(input)){
+                // Update flag to indicate a match is found
+                match = true;
+                System.out.println(vendor);
+            }
+        }
+        // Display message if no matching vendors are found
+        if(!match){
+            System.out.printf("\nNo matching vendors for %s :( \n", input);
+        }
+        System.out.printf("\n~~~~ End of search results for %s ~~~~\n", input);
+        // re-run program
+        displayReports();
     }
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~ ALL REPORT METHODS END  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~

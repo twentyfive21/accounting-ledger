@@ -141,11 +141,9 @@ public class Ledger {
         switch(choice){
             case "a": displayAllEntries();
                 break;
-            case "d": System.out.println("hello");
-                //displayDeposits();
+            case "d": displayChosenEntries("deposit");
                 break;
-            case "p": System.out.println("hello2");
-                //displayPayments();
+            case "p": displayChosenEntries("negative");
                 break;
             case "r": displayReports();
                 break;
@@ -157,7 +155,8 @@ public class Ledger {
         }
 
     }
-// ~~~~~~~~~~~~~~~~~~~ DISPLAY ALL ENTRIES  ~~~~~~~~~~~~~~~~~~~~~~~~~~
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~ DISPLAY ALL ENTRIES  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
     public static void displayAllEntries(){
         // display newest transactions first for all !
         transactions.sort(Comparator.comparing(Transaction::getDate));
@@ -166,7 +165,35 @@ public class Ledger {
                 System.out.println(item);
             }
         System.out.println("\n~~~~~~ End of all the current transactions ~~~~~~");
+        // take user back to ledger
+        displayLedger();
     }
+
+// ~~~~~~~~~~~~~~~~~~~~~ DISPLAY DEPOSITS OR NEGATIVE TRANSACTIONS ~~~~~~~~~~~~~~~~~~~~~~~
+
+    public static void displayChosenEntries(String choice){
+        transactions.sort(Comparator.comparing(Transaction::getDate));
+        System.out.printf("\n~~~~~~ Start of all the %s transactions ~~~~~~\n", choice);
+
+        if(choice.equals("deposit")){
+            for(Transaction item : transactions){
+                if(item.getPrice() > 0){
+                    System.out.println(item);
+                }
+            }
+        } else {
+            for(Transaction item : transactions){
+                if(item.getPrice() < 0){
+                    System.out.println(item);
+                }
+            }
+        }
+
+        System.out.printf("\n~~~~~~ End of all the %s transactions ~~~~~~\n", choice);
+        // take user back to ledger
+        displayLedger();
+    }
+
 
 // ~~~~~~~~~~~~~~~~~~~ DISPLAY REPORTS  ~~~~~~~~~~~~~~~~~~~~~~~~~~
 

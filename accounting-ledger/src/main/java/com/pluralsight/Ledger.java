@@ -1,6 +1,7 @@
 package com.pluralsight;
 
 import java.io.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -18,7 +19,6 @@ public class Ledger {
 
     public static void main(String[] args) {
         loadInventory();
-    // call displayHomeScreen() to start program
         displayHomeScreen();
     }
 
@@ -198,15 +198,52 @@ public class Ledger {
 // ~~~~~~~~~~~~~~~~~~~ DISPLAY REPORTS  ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     public static void displayReports(){
-        System.out.println("displayMonthToDate");
-        System.out.println("displayPreviousMonth");
-        System.out.println("displayYearToDate");
-        System.out.println("displayPreviousYear");
-        System.out.println("searchByVendor");
-        System.out.println("searchByInput");
-        // go back to report screen
-        System.out.println("displayReports");
+        /* the workshop asked to have a method to re-route you back
+         to reports page while on the reports screen
+         if that method is called on the reports screen logic is not valid
+         option 0 is changed to take you back to ledger instead
+         else user would be stuck in reports screen with no way out */
+        System.out.println("\n~~~~~ Welcome to the reports page ~~~~\n");
+        System.out.println("(1) Month to Date");
+        System.out.println("(2) Previous Month");
+        System.out.println("(3) Year To Date");
+        System.out.println("(4) Previous Year");
+        System.out.println("(5) Search by Vendor");
+        System.out.println("(0) Go back to Ledger");
+        System.out.print("Selection: ");
+        String choice = scanner.nextLine();
+
+        switch (choice){
+            case "1": displayMonthToDate();
+                break;
+            case "2": System.out.println("displayPreviousMonth");
+                break;
+            case "3": System.out.println("displayYearToDate");
+                break;
+            case "4":System.out.println("displayPreviousYear");
+                break;
+            case "5":System.out.println("searchByVendor");
+                break;
+            case "0": displayLedger();
+                break;
+            default: System.out.println("\n**** Error invalid choice ****\n");
+                displayHomeScreen();
+                break;
+        }
+
     }
+
+// ~~~~~~~~~~~~~~~~~~~ ALL REPORT METHODS START  ~~~~~~~~~~~~~~~~~~~~~~~~
+    // EVERY REPORT METHOD HERE NEEDS TO GO BACK TO REPORTS
+
+    public static void displayMonthToDate(){
+        LocalDate today = LocalDate.now();
+        //(TODO)
+        System.out.println(today);
+        displayReports();
+    }
+
+// ~~~~~~~~~~~~~~~~~~~~~ ALL REPORT METHODS END  ~~~~~~~~~~~~~~~~~~~~~~~~
 
 // ~~~~~~~~~~~~~~~~~~~ LOAD INVENTORY  ~~~~~~~~~~~~~~~~~~~~~~~~
 

@@ -1,11 +1,10 @@
 package com.pluralsight;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
+import java.io.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Scanner;
 import java.util.regex.Pattern;
 
@@ -18,6 +17,7 @@ public class Ledger {
 // ~~~~~~~~~~~~~~~~~~~~ MAIN ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     public static void main(String[] args) {
+        loadInventory();
     // call displayHomeScreen() to start program
         displayHomeScreen();
     }
@@ -40,7 +40,7 @@ public class Ledger {
     public static void displayHomeScreen(){
         System.out.println("\n~~~~~~~~~ Welcome to the Account Ledger Application ~~~~~~~~~");
         System.out.println("~ We are pleased you have chosen us for your business needs. ~");
-        System.out.println("Please select what you would like to do today");
+        System.out.println("Please select what you would like to do today.");
         System.out.println("(D) Add Deposit");
         System.out.println("(P) Make Payment");
         System.out.println("(L) Ledger");
@@ -50,9 +50,9 @@ public class Ledger {
         String choice = scanner.nextLine().toLowerCase();
 
         switch (choice){
-            case "d": getUserInput("deposit");
+            case "d": getUserInput("deposit from");
                 break;
-            case "p": getUserInput("payment");
+            case "p": getUserInput("spent on");
                 break;
             case "l": displayLedger();
                 break;
@@ -74,13 +74,14 @@ public class Ledger {
             String vendor = scanner.nextLine().trim();
             System.out.print("Please provide the price: ");
             double price = 0.00;
-            if(type.equals("deposit")){
+            if(type.equals("deposit from")){
                 price = scanner.nextDouble();
             } else {
                 price = scanner.nextDouble();
                 // turn double negative
                 price = -price;
             }
+            System.out.printf("\n$%,.2f %s %s added on %s",price,type,vendor,getDateAndTime());
             // clear left over in buffer if try is successful
             scanner.nextLine();
             // get date and time for object creation
@@ -118,10 +119,9 @@ public class Ledger {
             writer.flush();
             writer.close();
             // The comma in the format string is used to include a thousand separator in the price for readability.
-            System.out.printf("\n$%,.2f spent on %s added on %s",price,vendor,getDateAndTime());
             System.out.println("\n**** Transaction added successfully ****");
         }catch(Exception e){
-            System.out.println("\n**** Error Wrting to file ****");
+            System.out.println("\n**** Error writing to file ****");
         }
         // take user back home
         displayHomeScreen();
@@ -130,19 +130,46 @@ public class Ledger {
 // ~~~~~~~~~~~~~~~~~~~ DISPLAY LEDGER  ~~~~~~~~~~~~~~~~~~~~~~~~
 
     public static void displayLedger(){
+        System.out.println("\n~~~~~~ Welcome to the ledger screen ~~~~~~");
+        System.out.println("(A) Display all entries");
+        System.out.println("(D) Display deposits");
+        System.out.println("(P) Display payments");
+        System.out.println("(R) Display Reports");
+        System.out.println("(H) Go back home");
+        System.out.print("Selection: ");
+        String choice = scanner.nextLine().trim().toLowerCase();
+        switch(choice){
+            case "a": displayAllEntries();
+                break;
+            case "d": System.out.println("hello");
+                //displayDeposits();
+                break;
+            case "p": System.out.println("hello2");
+                //displayPayments();
+                break;
+            case "r": displayReports();
+                break;
+            case "h": displayHomeScreen();
+                break;
+            default: System.out.println("\n**** Error please choose a valid option ****");
+                     displayLedger();
+                break;
+        }
+
+    }
+// ~~~~~~~~~~~~~~~~~~~ DISPLAY ALL ENTRIES  ~~~~~~~~~~~~~~~~~~~~~~~~~~
+    public static void displayAllEntries(){
         // display newest transactions first for all !
-//        for(Transaction item : transactions){
-//            System.out.println(item);
-//        }
-        System.out.println("displayAllEntries");
-        System.out.println("displayDeposits");
-        System.out.println("displayPayments");
-        System.out.println("displayReports");
-        // go back to home screen
-        // displayHomeScreen();
+        transactions.sort(Comparator.comparing(Transaction::getDate));
+        System.out.println("\n~~~~~~ Start of all the current transactions ~~~~~~");
+            for(Transaction item : transactions){
+                System.out.println(item);
+            }
+        System.out.println("\n~~~~~~ End of all the current transactions ~~~~~~");
     }
 
 // ~~~~~~~~~~~~~~~~~~~ DISPLAY REPORTS  ~~~~~~~~~~~~~~~~~~~~~~~~~~
+
     public static void displayReports(){
         System.out.println("displayMonthToDate");
         System.out.println("displayPreviousMonth");
@@ -152,6 +179,29 @@ public class Ledger {
         System.out.println("searchByInput");
         // go back to report screen
         System.out.println("displayReports");
+    }
+
+// ~~~~~~~~~~~~~~~~~~~ LOAD INVENTORY  ~~~~~~~~~~~~~~~~~~~~~~~~
+
+    public static void loadInventory(){
+        try{
+            BufferedReader bufReader = new BufferedReader(new FileReader("transactions.csv"));
+            // skips header
+            bufReader.readLine();
+            String item = "";
+            while ((item = bufReader.readLine()) != null){
+
+                String[] entry = item.split(Pattern.quote("|"));
+
+                Transaction currentItem = new Transaction(entry[0], entry[1],
+                        entry[2],entry[3], Double.parseDouble(entry[4]));
+
+                transactions.add(currentItem);
+
+            }
+        } catch (Exception e){
+            System.out.println("Error loading inventory");
+        }
     }
 
 // ~~~~~~~~~~~~~~~~~~~ EXIT PROGRAM  ~~~~~~~~~~~~~~~~~~~~~~~~~~

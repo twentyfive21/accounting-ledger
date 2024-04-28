@@ -74,12 +74,7 @@ public class Transaction {
 
     @Override
     public String toString() {
-        return "Transaction{" +
-                "date='" + date + '\'' +
-                ", time='" + time + '\'' +
-                ", description='" + description + '\'' +
-                ", vendor='" + vendor + '\'' +
-                ", price=" + price +
-                '}';
+        return String.format("\nDate: %s & Time: %s\nPrice: $%.2f\nVendor: %s\nDescription: %s",
+                date, time, price, vendor, description);
     }
 }

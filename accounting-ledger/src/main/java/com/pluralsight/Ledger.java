@@ -38,17 +38,19 @@ public class Ledger {
 // ~~~~~~~~~~~~~~~~~~ DISPLAY HOME SCREEN ~~~~~~~~~~~~~~~~~
 
     public static void displayHomeScreen(){
+        // Display welcome message
         System.out.println("\n~~~~~~~~~ Welcome to the Account Ledger Application ~~~~~~~~~");
         System.out.println("~ We are pleased you have chosen us for your business needs. ~");
         System.out.println("Please select what you would like to do today.");
+        // Display menu options
         System.out.println("(D) Add Deposit");
         System.out.println("(P) Make Payment");
         System.out.println("(L) Ledger");
         System.out.println("(X) Exit");
         System.out.print("Selection: ");
-        // turn choice to lower case for checking and error handles both cases
+        // Get user input and convert it to lowercase for case-insensitive comparison
         String choice = scanner.nextLine().toLowerCase();
-
+        // Handle user choice
         switch (choice){
             case "d": getUserInput("deposit from");
                 break;
@@ -66,7 +68,7 @@ public class Ledger {
 
 // ~~~~~~~~~~~~~~~~~~~ FORMAT INPUT ~~~~~~~~~~~~~~~~~~~~~~~~
     public static void getUserInput(String type){
-        try{
+        try{ // get user info for Transaction object
             System.out.printf("\n~~~~ You have chosen to add a %s ~~~~\n", type);
             System.out.print("Please provide the description: ");
             String description = scanner.nextLine().trim();
@@ -130,6 +132,7 @@ public class Ledger {
 // ~~~~~~~~~~~~~~~~~~~ DISPLAY LEDGER  ~~~~~~~~~~~~~~~~~~~~~~~~
 
     public static void displayLedger(){
+        // Display menu options
         System.out.println("\n~~~~~~ Welcome to the ledger screen ~~~~~~");
         System.out.println("(A) Display all entries");
         System.out.println("(D) Display deposits");
@@ -138,6 +141,7 @@ public class Ledger {
         System.out.println("(H) Go back home");
         System.out.print("Selection: ");
         String choice = scanner.nextLine().trim().toLowerCase();
+        // Handle user choice
         switch(choice){
             case "a": displayAllEntries();
                 break;
@@ -153,12 +157,21 @@ public class Ledger {
                      displayLedger();
                 break;
         }
-
     }
+
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~ DISPLAY ALL ENTRIES  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     public static void displayAllEntries(){
-        // display newest transactions first for all !
+    /* transactions.sort(...): Sorts the transactions list in desc order based on the transaction date.
+    *
+    * Comparator.comparing(...): Creates a comparator that extracts the date from each Transaction object
+    * and compares them using their natural ordering or a specified comparator.
+    *
+    * Transaction::getDate: Method reference to the getDate() method of the Transaction class,
+    * used to extract the date from each Transaction object.
+    *
+    * .reversed(): Reverses the natural ordering of the comparator, ensuring transactions are sorted
+    * in descending order of dates, from newest to oldest. */
         transactions.sort(Comparator.comparing(Transaction::getDate).reversed());
         System.out.println("\n~~~~~~ Start of all the current transactions ~~~~~~");
             for(Transaction item : transactions){
@@ -172,16 +185,19 @@ public class Ledger {
 // ~~~~~~~~~~~~~~~~~~~~~ DISPLAY DEPOSITS OR NEGATIVE TRANSACTIONS ~~~~~~~~~~~~~~~~~~~~~~~
 
     public static void displayChosenEntries(String choice){
+        // Sort transactions in descending order based on date
         transactions.sort(Comparator.comparing(Transaction::getDate).reversed());
         System.out.printf("\n~~~~~~ Start of all the %s transactions ~~~~~~\n", choice);
-
+        // Iterate over transactions to display chosen entries based on the choice
         if(choice.equals("deposit")){
+            // Display transactions with positive prices (deposits)
             for(Transaction item : transactions){
                 if(item.getPrice() > 0){
                     System.out.println(item);
                 }
             }
         } else {
+            // Display transactions with negative prices (payments)
             for(Transaction item : transactions){
                 if(item.getPrice() < 0){
                     System.out.println(item);
@@ -212,7 +228,7 @@ public class Ledger {
         System.out.println("(0) Go back to Ledger");
         System.out.print("Selection: ");
         String choice = scanner.nextLine();
-
+        // Handle user choice
         switch (choice){
             case "1": displayMonthReport("current");
                 break;
@@ -224,7 +240,7 @@ public class Ledger {
                 break;
             case "5": searchByVendor();
                 break;
-            case "0": displayLedger();
+            case "0": displayLedger(); // Go back to ledger
                 break;
             default: System.out.println("\n**** Error invalid choice ****\n");
                 displayReports();
@@ -235,7 +251,7 @@ public class Ledger {
 
 // ~~~~~~~~~~~~~~~~~~~ ALL REPORT METHODS START  ~~~~~~~~~~~~~~~~~~~~~~~~
 
-    // ************* MONTH TO DATE && PREVIOUS REPORT ****************
+    // ************* MONTH TO DATE && PREVIOUS MONTH REPORT ****************
     public static void displayMonthReport(String type){
         // get current day
         LocalDate today;
@@ -246,7 +262,6 @@ public class Ledger {
             // previous month choice
             today = LocalDate.now().minusMonths(1);
         }
-
         // get beginning of month
         LocalDate monthFromNow = today.withDayOfMonth(1);
         System.out.printf("\n~~~~ All transactions from %s to %s ~~~~\n",monthFromNow, today);
@@ -269,7 +284,7 @@ public class Ledger {
     }
 
     // ************* YEAR TO DATE && PREVIOUS YEAR REPORT ****************
-    // (TODO)
+
     public static void displayYearReport(String type){
         LocalDate endOfYear;
         LocalDate startOfYear;
@@ -279,17 +294,19 @@ public class Ledger {
             startOfYear = LocalDate.now().withDayOfMonth(1).withMonth(1);
         } else {
             // 01-01-2023 to 12-31-2023
-            startOfYear = LocalDate.now().minusYears(1).withDayOfMonth(1).withMonth(1);
+            startOfYear = LocalDate.now().minusYears(1).withMonth(1).withDayOfMonth(1);
             endOfYear = LocalDate.now().minusYears(1).withMonth(12).withDayOfMonth(31);
         }
-
+        // display the newest dates first
         transactions.sort(Comparator.comparing(Transaction::getDate).reversed());
         System.out.printf("\n~~~~ All transactions from %s to %s ~~~~\n",startOfYear, endOfYear);
+
         for(Transaction currentDate : transactions){
+            // parse the date to localDate since it is saved as a string in the object
             LocalDate date = LocalDate.parse(currentDate.getDate());
+            // Adjusting the date range to include all days within the range (inclusive)
             boolean startYear = date.isAfter(startOfYear.minusDays(1));
             boolean endYear = date.isBefore(endOfYear.plusDays(1));
-
             if(startYear && endYear){
                 System.out.println(currentDate);
             }
@@ -311,20 +328,20 @@ public class Ledger {
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ LOAD INVENTORY  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     public static void loadInventory(){
-        try{
+        try{ // Open the file "transactions.csv" for reading
             BufferedReader bufReader = new BufferedReader(new FileReader("transactions.csv"));
-            // skips header
+            // Skip the header line
             bufReader.readLine();
             String item = "";
+            // Read each line of the file until the end
             while ((item = bufReader.readLine()) != null){
-
+                // Split the line into individual elements using the "|"
                 String[] entry = item.split(Pattern.quote("|"));
-
+                // Create a new Transaction object using the elements from the line
                 Transaction currentItem = new Transaction(entry[0], entry[1],
                         entry[2],entry[3], Double.parseDouble(entry[4]));
-
+                // Add the Transaction object to the transactions list
                 transactions.add(currentItem);
-
             }
         } catch (Exception e){
             System.out.println("Error loading inventory");

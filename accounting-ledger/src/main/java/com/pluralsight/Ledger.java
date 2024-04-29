@@ -225,6 +225,7 @@ public class Ledger {
         System.out.println("(3) Year To Date");
         System.out.println("(4) Previous Year");
         System.out.println("(5) Search by Vendor");
+        System.out.println("(6) Custom Search");
         System.out.println("(0) Go back to Ledger");
         System.out.print("Selection: ");
         String choice = scanner.nextLine();
@@ -239,6 +240,8 @@ public class Ledger {
             case "4": displayYearReport("previous");
                 break;
             case "5": searchByVendor();
+                break;
+            case "6": customSearch();
                 break;
             case "0": displayLedger(); // Go back to ledger
                 break;
@@ -347,6 +350,80 @@ public class Ledger {
         // re-run program
         displayReports();
     }
+
+    // ********************* CUSTOM SEARCH *********************
+
+    //(TODO SEARCH VALUES - START DATE, END DATE, DESCRIPTION, VENDOR, AMOUNT)
+    //(TODO FILTER ONLY ON FIELD THAT IS GIVEN)
+
+    public static void customSearch(){
+            try{
+                System.out.println("\n~~~~ Welcome to the custom search ~~~~");
+                System.out.print("Start Date yyyy-mm-dd : ");
+                String startDate = scanner.nextLine().trim();
+                System.out.print("End Date yyyy-mm-dd: ");
+                String endDate = scanner.nextLine().trim();
+                System.out.print("Description: ");
+                String details = scanner.nextLine().trim().toLowerCase();
+                System.out.print("Vendor: ");
+                String vendor = scanner.nextLine().trim().toLowerCase();
+                System.out.print("Amount: ");
+                String price = scanner.nextLine();
+                // turn dates from string to local date
+                LocalDate startFmtDate = startDate.isEmpty() ? null : LocalDate.parse(startDate);
+                LocalDate endFmtDate = endDate.isEmpty() ? null : LocalDate.parse(endDate);
+
+                System.out.println(startDate);
+                System.out.println(endDate);
+                System.out.println(details);
+                System.out.println(vendor);
+                System.out.println(price);
+
+                // Sort transactions in descending order based on date
+                transactions.sort(Comparator.comparing(Transaction::getDate).reversed());
+                if (startDate.isEmpty() && endDate.isEmpty() && details.isEmpty() && vendor.isEmpty() && price.isEmpty()) {
+                    System.out.println("~~~~ All fields are empty. ~~~~");
+                    for (Transaction item : transactions){
+                        System.out.println(item);
+                    }
+                } else if (!startDate.isEmpty() &&!endDate.isEmpty()){
+                    for (Transaction item : transactions){
+                        LocalDate dateToCheck = LocalDate.parse(item.getDate());
+                        boolean start = dateToCheck.isAfter(startFmtDate.minusDays(1));
+                        boolean end = dateToCheck.isBefore(endFmtDate.plusDays(1));
+                       if (start && end){
+                           System.out.println(item);
+                       }
+                    }
+                } else if (!endDate.isEmpty()){
+                    for (Transaction item : transactions){
+                        if (LocalDate.parse(item.getDate()).equals(endFmtDate)){
+                            System.out.println(item);
+                        }
+                    }
+                } else if (!startDate.isEmpty()) {
+                    for (Transaction item : transactions){
+                        if (LocalDate.parse(item.getDate()).equals(startFmtDate)){
+                            System.out.println(item);
+                        }
+                    }
+                } else {
+                    System.out.println("End");
+                }
+
+                // re-run program
+                displayReports();
+            }catch (Exception e){
+                // re-run program
+                displayReports();
+                System.out.println("error");
+            }
+
+
+
+
+    }
+
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~ ALL REPORT METHODS END  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

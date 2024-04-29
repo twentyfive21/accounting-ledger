@@ -52,9 +52,9 @@ public class Ledger {
         String choice = scanner.nextLine().toLowerCase();
         // Handle user choice
         switch (choice){
-            case "d": getUserInput("deposit from");
+            case "d": getUserInput("deposit");
                 break;
-            case "p": getUserInput("spent on");
+            case "p": getUserInput("payment");
                 break;
             case "l": displayLedger();
                 break;
@@ -76,7 +76,7 @@ public class Ledger {
             String vendor = scanner.nextLine().trim();
             System.out.print("Please provide the price: ");
             double price = 0.00;
-            if(type.equals("deposit from")){
+            if(type.equals("deposit")){
                 price = scanner.nextDouble();
             } else {
                 price = scanner.nextDouble();
@@ -94,7 +94,7 @@ public class Ledger {
             transactions.add(item);
             writeToFile(description,vendor,price);
         } catch (Exception e){
-            System.out.println("\n**** Error adding deposit please try again. ****");
+            System.out.println("\n**** Error adding please try again. ****");
             // next line handles the error and clears buffer since try failed
             scanner.nextLine();
             getUserInput(type);
@@ -353,75 +353,51 @@ public class Ledger {
 
     // ********************* CUSTOM SEARCH *********************
 
-    //(TODO SEARCH VALUES - START DATE, END DATE, DESCRIPTION, VENDOR, AMOUNT)
-    //(TODO FILTER ONLY ON FIELD THAT IS GIVEN)
+    public static void customSearch() {
+        try {
+            System.out.println("\n~~~~ Welcome to the custom search ~~~~");
+            System.out.print("Start Date yyyy-mm-dd : ");
+            String startDate = scanner.nextLine().trim();
+            System.out.print("End Date yyyy-mm-dd: ");
+            String endDate = scanner.nextLine().trim();
+            System.out.print("Description: ");
+            String details = scanner.nextLine().trim().toLowerCase();
+            System.out.print("Vendor: ");
+            String vendor = scanner.nextLine().trim().toLowerCase();
+            System.out.print("Maximum Amount: ");
+            String price = scanner.nextLine();
+            System.out.print("Minimum Amount: ");
 
-    public static void customSearch(){
-            try{
-                System.out.println("\n~~~~ Welcome to the custom search ~~~~");
-                System.out.print("Start Date yyyy-mm-dd : ");
-                String startDate = scanner.nextLine().trim();
-                System.out.print("End Date yyyy-mm-dd: ");
-                String endDate = scanner.nextLine().trim();
-                System.out.print("Description: ");
-                String details = scanner.nextLine().trim().toLowerCase();
-                System.out.print("Vendor: ");
-                String vendor = scanner.nextLine().trim().toLowerCase();
-                System.out.print("Amount: ");
-                String price = scanner.nextLine();
-                // turn dates from string to local date
-                LocalDate startFmtDate = startDate.isEmpty() ? null : LocalDate.parse(startDate);
-                LocalDate endFmtDate = endDate.isEmpty() ? null : LocalDate.parse(endDate);
+            // Sort transactions in descending order based on date
+            transactions.sort(Comparator.comparing(Transaction::getDate).reversed());
 
-                System.out.println(startDate);
-                System.out.println(endDate);
-                System.out.println(details);
-                System.out.println(vendor);
-                System.out.println(price);
+            boolean found = false; // Flag to track if any transactions are found
 
-                // Sort transactions in descending order based on date
-                transactions.sort(Comparator.comparing(Transaction::getDate).reversed());
-                if (startDate.isEmpty() && endDate.isEmpty() && details.isEmpty() && vendor.isEmpty() && price.isEmpty()) {
-                    System.out.println("~~~~ All fields are empty. ~~~~");
-                    for (Transaction item : transactions){
-                        System.out.println(item);
-                    }
-                } else if (!startDate.isEmpty() &&!endDate.isEmpty()){
-                    for (Transaction item : transactions){
-                        LocalDate dateToCheck = LocalDate.parse(item.getDate());
-                        boolean start = dateToCheck.isAfter(startFmtDate.minusDays(1));
-                        boolean end = dateToCheck.isBefore(endFmtDate.plusDays(1));
-                       if (start && end){
-                           System.out.println(item);
-                       }
-                    }
-                } else if (!endDate.isEmpty()){
-                    for (Transaction item : transactions){
-                        if (LocalDate.parse(item.getDate()).equals(endFmtDate)){
-                            System.out.println(item);
-                        }
-                    }
-                } else if (!startDate.isEmpty()) {
-                    for (Transaction item : transactions){
-                        if (LocalDate.parse(item.getDate()).equals(startFmtDate)){
-                            System.out.println(item);
-                        }
-                    }
-                } else {
-                    System.out.println("End");
+            for (Transaction item : transactions) {
+                LocalDate transactionDate = LocalDate.parse(item.getDate());
+                boolean dateInRange = (startDate.isEmpty() || transactionDate.isAfter(LocalDate.parse(startDate).minusDays(1))) &&
+                        (endDate.isEmpty() || transactionDate.isBefore(LocalDate.parse(endDate).plusDays(1)));
+                boolean matchesDetails = details.isEmpty() || item.getDescription().toLowerCase().contains(details);
+                boolean matchesVendor = vendor.isEmpty() || item.getVendor().toLowerCase().contains(vendor);
+                boolean matchesPrice = price.isEmpty() || Double.parseDouble(price) == item.getPrice();
+                // print out matching transaction
+                if (dateInRange && matchesDetails && matchesVendor && matchesPrice) {
+                    System.out.println(item);
+                    found = true; // Set found flag to true if at least one transaction is found
                 }
-
-                // re-run program
-                displayReports();
-            }catch (Exception e){
-                // re-run program
-                displayReports();
-                System.out.println("error");
             }
 
+            if (!found) {
+                System.out.println("No matching transactions found.");
+            }
 
-
-
+            // re-run program
+            displayReports();
+        } catch (Exception e) {
+            // re-run program
+            displayReports();
+            System.out.println("Error searching for item");
+        }
     }
 
 

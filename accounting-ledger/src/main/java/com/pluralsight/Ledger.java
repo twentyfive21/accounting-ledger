@@ -4,6 +4,7 @@ import java.io.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Scanner;
@@ -97,7 +98,7 @@ public class Ledger {
             System.out.println("\n**** Error adding please try again. ****");
             // next line handles the error and clears buffer since try failed
             scanner.nextLine();
-            getUserInput(type);
+            displayHomeScreen();
         }
     }
 
@@ -173,6 +174,7 @@ public class Ledger {
     * .reversed(): Reverses the natural ordering of the comparator, ensuring transactions are sorted
     * in descending order of dates, from newest to oldest. */
         transactions.sort(Comparator.comparing(Transaction::getDate).reversed());
+
         System.out.println("\n~~~~~~ Start of all the current transactions ~~~~~~");
             for(Transaction item : transactions){
                 System.out.println(item);
@@ -263,7 +265,7 @@ public class Ledger {
              today = LocalDate.now();
         } else {
             // previous month choice
-            today = LocalDate.now().minusMonths(1);
+            today = LocalDate.now().minusMonths(1).with(TemporalAdjusters.lastDayOfMonth());
         }
         // get beginning of month
         LocalDate monthFromNow = today.withDayOfMonth(1);
@@ -276,7 +278,13 @@ public class Ledger {
             LocalDate date = LocalDate.parse(currentDate.getDate());
             // Adjusting the date range to include all days within the range (inclusive)
             boolean startDate = date.isAfter(monthFromNow.minusDays(1));
-            boolean endDate = date.isBefore(today.plusDays(1));
+            boolean endDate;
+            if(type.equals("current")){
+                endDate = date.isBefore(today.plusDays(1));
+            } else {
+                endDate = date.isBefore(today.plusDays(1));
+            }
+
             if(startDate && endDate){
                 System.out.println(currentDate);
             }
@@ -364,9 +372,8 @@ public class Ledger {
             String details = scanner.nextLine().trim().toLowerCase();
             System.out.print("Vendor: ");
             String vendor = scanner.nextLine().trim().toLowerCase();
-            System.out.print("Maximum Amount: ");
+            System.out.print("Exact Price: ");
             String price = scanner.nextLine();
-            System.out.print("Minimum Amount: ");
 
             // Sort transactions in descending order based on date
             transactions.sort(Comparator.comparing(Transaction::getDate).reversed());

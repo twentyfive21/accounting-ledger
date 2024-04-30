@@ -278,12 +278,7 @@ public class Ledger {
             LocalDate date = LocalDate.parse(currentDate.getDate());
             // Adjusting the date range to include all days within the range (inclusive)
             boolean startDate = date.isAfter(monthFromNow.minusDays(1));
-            boolean endDate;
-            if(type.equals("current")){
-                endDate = date.isBefore(today.plusDays(1));
-            } else {
-                endDate = date.isBefore(today.plusDays(1));
-            }
+            boolean endDate = date.isBefore(today.plusDays(1));
 
             if(startDate && endDate){
                 System.out.println(currentDate);

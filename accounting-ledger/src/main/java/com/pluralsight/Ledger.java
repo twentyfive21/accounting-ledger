@@ -377,27 +377,25 @@ public class Ledger {
 
             // Sort transactions in descending order based on date
             transactions.sort(Comparator.comparing(Transaction::getDate).reversed());
-
             boolean found = false; // Flag to track if any transactions are found
 
             for (Transaction item : transactions) {
-                LocalDate transactionDate = LocalDate.parse(item.getDate());
-                boolean dateInRange = (startDate.isEmpty() || transactionDate.isAfter(LocalDate.parse(startDate).minusDays(1))) &&
-                        (endDate.isEmpty() || transactionDate.isBefore(LocalDate.parse(endDate).plusDays(1)));
+            //Make a variable to hold the date of each transaction and parse it to a LocalDate datatype
+                boolean dateInRange = isDateInRange(item, startDate, endDate);
                 boolean matchesDetails = details.isEmpty() || item.getDescription().toLowerCase().contains(details);
                 boolean matchesVendor = vendor.isEmpty() || item.getVendor().toLowerCase().contains(vendor);
                 boolean matchesPrice = price.isEmpty() || Double.parseDouble(price) == item.getPrice();
-                // print out matching transaction
+            /* print out matching transaction. If a field is empty(null), the condition will be true,
+                effectively ignoring that criteria in the search. This allows the user to perform a search
+                based on any combination of criteria without being required to provide values for all fields. */
                 if (dateInRange && matchesDetails && matchesVendor && matchesPrice) {
                     System.out.println(item);
                     found = true; // Set found flag to true if at least one transaction is found
                 }
             }
-
             if (!found) {
                 System.out.println("No matching transactions found.");
             }
-
             // re-run program
             displayReports();
         } catch (Exception e) {
@@ -406,7 +404,29 @@ public class Ledger {
             System.out.println("Error searching for item");
         }
     }
+    /* isDateInRange method private is a good practice when the method is intended for internal
+     use within the class(customSearch can only access it) and does not need to be accessed from outside the class.
+     It encapsulates the functionality within the class, reducing the scope of access and preventing unintended use or
+     modification from other parts of the program.
 
+    Making the method static allows it to be called without creating an instance of the class.
+    This is useful for utility methods like isDateInRange, which operate on parameters passed to them
+    and do not rely on the state of any particular object instance. */
+    // ********************* IS DATE IN RANGE Referencing CUSTOM SEARCH *********************
+    private static boolean isDateInRange(Transaction item, String startDate, String endDate) {
+        LocalDate transactionDate = LocalDate.parse(item.getDate());
+        //Check if the start date is empty - returns true if empty else false
+        //Check if the transaction data is after the start date - return true else false
+        if (startDate.isEmpty() && endDate.isEmpty()) {
+            return true;
+        }
+        // parse dates now since they are not empty
+        LocalDate start = LocalDate.parse(startDate);
+        LocalDate end = LocalDate.parse(endDate);
+        boolean dateInRange = (transactionDate.isAfter(start.minusDays(1)))
+                        && (transactionDate.isBefore(end.plusDays(1)));
+        return dateInRange;
+    }
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~ ALL REPORT METHODS END  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

@@ -216,7 +216,7 @@ public class Ledger {
                 }
             }
         }
-        System.out.printf("\n+++++++++++++ Total cost : %,.2f ++++++++++++",sum);
+        System.out.printf("\n+++++++++++++ Total : $%,.2f ++++++++++++",sum);
         System.out.printf("\n~~~~~~ End of all the %s transactions ~~~~~~\n", choice);
         // take user back to ledger
         displayLedger();
@@ -268,7 +268,7 @@ public class Ledger {
 // ~~~~~~~~~~~~~~~~~~~ ALL REPORT METHODS START  ~~~~~~~~~~~~~~~~~~~~~~~~
 
     // ************* MONTH TO DATE && PREVIOUS MONTH REPORT ****************
-    public static void displayMonthReport(String type){
+    public static double[] displayMonthReport(String type){
         // get current day
         LocalDate today;
 
@@ -281,10 +281,11 @@ public class Ledger {
              TemporalAdjusters is a utility method in Java's java.time package  */
             today = LocalDate.now().minusMonths(1).with(TemporalAdjusters.lastDayOfMonth());
         }
+
         // get beginning of month
         LocalDate monthFromNow = today.withDayOfMonth(1);
         System.out.printf("\n~~~~ All transactions from %s to %s ~~~~\n",monthFromNow, today);
-
+        double[] sum = new double[2];
         // check for dates matching the range
         transactions.sort(Comparator.comparing(Transaction::getDate).reversed());
         for(Transaction currentDate : transactions){
@@ -296,16 +297,25 @@ public class Ledger {
             // if date is within the range display it
             if(startDate && endDate){
                 System.out.println(currentDate);
+                if(currentDate.getPrice() > 0){
+                    sum[0] += currentDate.getPrice();
+                } else {
+                    sum[1] += currentDate.getPrice();
+                }
+
             }
         }
+        System.out.printf("\n++++++ Your total deposits for this month : $%,.2f ++++++\n", sum[0]);
+        System.out.printf("++++++ Your total spent for this month : $%,.2f ++++++", sum[1]);
         System.out.printf("\n~~~~ End of transactions from %s to %s ~~~~\n",monthFromNow, today);
         System.out.println();
         displayReports();
+        return sum;
     }
 
     // ************* YEAR TO DATE && PREVIOUS YEAR REPORT ****************
 
-    public static void displayYearReport(String type){
+    public static double[] displayYearReport(String type){
         LocalDate endOfYear;
         LocalDate startOfYear;
         // show current year to date
@@ -320,7 +330,7 @@ public class Ledger {
         // display the newest dates first
         transactions.sort(Comparator.comparing(Transaction::getDate).reversed());
         System.out.printf("\n~~~~ All transactions from %s to %s ~~~~\n",startOfYear, endOfYear);
-
+        double[] sum = new double[2];
         for(Transaction currentDate : transactions){
             // parse the date to localDate since it is saved as a string in the object
             LocalDate date = LocalDate.parse(currentDate.getDate());
@@ -330,11 +340,19 @@ public class Ledger {
             // if date is within the range display it
             if(startYear && endYear){
                 System.out.println(currentDate);
+                if(currentDate.getPrice() > 0){
+                    sum[0] += currentDate.getPrice();
+                } else {
+                    sum[1] += currentDate.getPrice();
+                }
             }
         }
+        System.out.printf("\n++++++ Your total deposits for this year : $%,.2f ++++++\n", sum[0]);
+        System.out.printf("++++++ Your total spent for this year : $%,.2f ++++++", sum[1]);
         System.out.printf("\n~~~~ End of transactions from %s to %s ~~~~\n",startOfYear, endOfYear);
         // re-run program
         displayReports();
+        return sum;
     }
 
     // ********************* SEARCH BY VENDOR REPORT *********************

@@ -74,7 +74,8 @@ public class Transaction {
 
     @Override
     public String toString() {
-        return String.format("\nDate: %s & Time: %s\nPrice: $%.2f\nVendor: %s\nDescription: %s",
+        return String.format("****------------------------------------****\nDate: %s & Time: %s\n" +
+                        "Price: $%.2f\nVendor: %s\nDescription: %s",
                 date, time, price, vendor, description);
     }
 }

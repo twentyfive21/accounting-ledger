@@ -87,8 +87,7 @@ public class Ledger {
                 // turn double negative
                 price = -price;
             }
-            System.out.printf("\n$%,.2f %s %s added on %s",price,type,vendor,getDateAndTime());
-            // clear left over in buffer if try is successful
+            System.out.printf("\n$%,.2f %s from %s added on %s",price,type,vendor,getDateAndTime());
             scanner.nextLine();
             // get date and time for object creation
             String unformattedForObject = getDateAndTime();
@@ -98,8 +97,14 @@ public class Ledger {
             transactions.add(item);
             writeToFile(description,vendor,price);
         } catch (Exception e){
-            System.out.println("\n**** Error adding please try again. ****");
-            // next line handles the error and clears buffer since try failed
+            if(type.equals("deposit")){
+                System.out.println("\n**** Error adding deposit please try again. ****");
+            } else {
+                System.out.println("\n**** Error adding payment please try again. ****");
+            }
+//            System.out.println("\n**** Error adding please try again. ****");
+            /* next line handles the error and clears buffer since try failed
+            if not cleared will skip home screen and go back to deposit */
             scanner.nextLine();
             displayHomeScreen();
         }
@@ -267,7 +272,9 @@ public class Ledger {
             // current month choice
              today = LocalDate.now();
         } else {
-            // previous month choice
+            /* previous month choice
+             .with(TemporalAdjusters.lastDayOfMonth()): This adjusts the date to the last day of that month.
+             TemporalAdjusters is a utility method in Java's java.time package  */
             today = LocalDate.now().minusMonths(1).with(TemporalAdjusters.lastDayOfMonth());
         }
         // get beginning of month
@@ -410,17 +417,23 @@ public class Ledger {
     // ********************* IS DATE IN RANGE Referencing CUSTOM SEARCH *********************
     private static boolean isDateInRange(Transaction item, String startDate, String endDate) {
         LocalDate transactionDate = LocalDate.parse(item.getDate());
-        //Check if the start date is empty - returns true if empty else false
-        //Check if the transaction data is after the start date - return true else false
+        // Check if both start and end dates are empty return true and do not filter
         if (startDate.isEmpty() && endDate.isEmpty()) {
             return true;
-        }
-        // parse dates now since they are not empty
-        LocalDate start = LocalDate.parse(startDate);
-        LocalDate end = LocalDate.parse(endDate);
-        boolean dateInRange = (transactionDate.isAfter(start.minusDays(1)))
-                        && (transactionDate.isBefore(end.plusDays(1)));
-        return dateInRange;
+       }
+        // return start date since no end date was provided
+        if (!startDate.isEmpty() && endDate.isEmpty() && transactionDate.isEqual(LocalDate.parse(startDate)))
+            return true;
+        // return end date since no start date was provided
+        if (startDate.isEmpty() && !endDate.isEmpty() && transactionDate.isEqual(LocalDate.parse(endDate)))
+            return true;
+        // return inclusive dates from start to end date
+        if (!startDate.isEmpty() && !endDate.isEmpty() &&
+                transactionDate.isAfter(LocalDate.parse(startDate).minusDays(1)) &&
+                transactionDate.isBefore(LocalDate.parse(endDate).plusDays(1)))
+            return true;
+
+        return false;
     }
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~ ALL REPORT METHODS END  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~

@@ -102,7 +102,6 @@ public class Ledger {
             } else {
                 System.out.println("\n**** Error adding payment please try again. ****");
             }
-//            System.out.println("\n**** Error adding please try again. ****");
             /* next line handles the error and clears buffer since try failed
             if not cleared will skip home screen and go back to deposit */
             scanner.nextLine();
@@ -289,7 +288,7 @@ public class Ledger {
             // Adjusting the date range to include all days within the range (inclusive)
             boolean startDate = date.isAfter(monthFromNow.minusDays(1));
             boolean endDate = date.isBefore(today.plusDays(1));
-
+            // if date is within the range display it
             if(startDate && endDate){
                 System.out.println(currentDate);
             }
@@ -323,6 +322,7 @@ public class Ledger {
             // Adjusting the date range to include all days within the range (inclusive)
             boolean startYear = date.isAfter(startOfYear.minusDays(1));
             boolean endYear = date.isBefore(endOfYear.plusDays(1));
+            // if date is within the range display it
             if(startYear && endYear){
                 System.out.println(currentDate);
             }
@@ -469,5 +469,4 @@ public class Ledger {
     public static void exitProgram() {
         System.out.println("\nThank you for visiting! Goodbye, come again! :)");
     }
-
 }

@@ -13,6 +13,7 @@ import java.util.regex.Pattern;
 public class Ledger {
 
 // Declaring the scanner globally to enhance code cleanliness and eliminate the need for passing
+
     static Scanner scanner = new Scanner(System.in);
     static ArrayList<Transaction> transactions = new ArrayList<>();
 
@@ -69,13 +70,15 @@ public class Ledger {
 
 // ~~~~~~~~~~~~~~~~~~~ FORMAT INPUT ~~~~~~~~~~~~~~~~~~~~~~~~
     public static void getUserInput(String type){
-        try{ // get user info for Transaction object
+        try{
+            // get user info for Transaction object
             System.out.printf("\n~~~~ You have chosen to add a %s ~~~~\n", type);
             System.out.print("Please provide the description: ");
             String description = scanner.nextLine().trim();
             System.out.print("Please provide the vendor: ");
             String vendor = scanner.nextLine().trim();
             System.out.print("Please provide the price: ");
+
             double price = 0.00;
             if(type.equals("deposit")){
                 price = scanner.nextDouble();
@@ -391,13 +394,10 @@ public class Ledger {
             if (!found) {
                 System.out.println("No matching transactions found.");
             }
-            // re-run program
-            displayReports();
         } catch (Exception e) {
-            // re-run program
-            displayReports();
-            System.out.println("Error searching for item");
+            System.out.println("\nNo matching transactions found within this criteria.");
         }
+        displayReports();
     }
     /* isDateInRange method private is a good practice when the method is intended for internal
      use within the class(customSearch can only access it) and does not need to be accessed from outside the class.
@@ -450,7 +450,6 @@ public class Ledger {
     }
 
 // ~~~~~~~~~~~~~~~~~~~ EXIT PROGRAM  ~~~~~~~~~~~~~~~~~~~~~~~~~~
-
     public static void exitProgram() {
         System.out.println("\nThank you for visiting! Goodbye, come again! :)");
     }

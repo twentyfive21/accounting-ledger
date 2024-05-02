@@ -422,17 +422,20 @@ public class Ledger {
             return true;
        }
         // return start date since no end date was provided
-        if (!startDate.isEmpty() && endDate.isEmpty() && transactionDate.isEqual(LocalDate.parse(startDate)))
+        if (!startDate.isEmpty() && endDate.isEmpty() && transactionDate.isEqual(LocalDate.parse(startDate))){
             return true;
+        }
         // return end date since no start date was provided
-        if (startDate.isEmpty() && !endDate.isEmpty() && transactionDate.isEqual(LocalDate.parse(endDate)))
+        if (startDate.isEmpty() && !endDate.isEmpty() && transactionDate.isEqual(LocalDate.parse(endDate))){
             return true;
+        }
         // return inclusive dates from start to end date
         if (!startDate.isEmpty() && !endDate.isEmpty() &&
                 transactionDate.isAfter(LocalDate.parse(startDate).minusDays(1)) &&
-                transactionDate.isBefore(LocalDate.parse(endDate).plusDays(1)))
+                transactionDate.isBefore(LocalDate.parse(endDate).plusDays(1))){
             return true;
-
+        }
+        // return false if nothing matches
         return false;
     }
 

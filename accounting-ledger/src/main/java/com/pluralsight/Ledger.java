@@ -193,16 +193,18 @@ public class Ledger {
 
 // ~~~~~~~~~~~~~~~~~~~~~ DISPLAY DEPOSITS OR NEGATIVE TRANSACTIONS ~~~~~~~~~~~~~~~~~~~~~~~
 
-    public static void displayChosenEntries(String choice){
+    public static double displayChosenEntries(String choice){
         // Sort transactions in descending order based on date
         transactions.sort(Comparator.comparing(Transaction::getDate).reversed());
         System.out.printf("\n~~~~~~ Start of all the %s transactions ~~~~~~\n", choice);
         // Iterate over transactions to display chosen entries based on the choice
+        double sum = 0.00;
         if(choice.equals("deposit")){
             // Display transactions with positive prices (deposits)
             for(Transaction item : transactions){
                 if(item.getPrice() > 0){
                     System.out.println(item);
+                    sum += item.getPrice();
                 }
             }
         } else {
@@ -210,13 +212,15 @@ public class Ledger {
             for(Transaction item : transactions){
                 if(item.getPrice() < 0){
                     System.out.println(item);
+                    sum += item.getPrice();
                 }
             }
         }
-
+        System.out.printf("\n+++++++++++++ Total cost : %,.2f ++++++++++++",sum);
         System.out.printf("\n~~~~~~ End of all the %s transactions ~~~~~~\n", choice);
         // take user back to ledger
         displayLedger();
+        return sum;
     }
 
 
@@ -267,6 +271,7 @@ public class Ledger {
     public static void displayMonthReport(String type){
         // get current day
         LocalDate today;
+
         if(type.equals("current")){
             // current month choice
              today = LocalDate.now();

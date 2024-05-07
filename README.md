@@ -16,11 +16,11 @@
 
 ## Folder Structure: 
 ![homescreen](https://github.com/twentyfive21/accounting-ledger/assets/107441301/97bb6283-a824-41a2-aec3-559a0e58c688)
-## Homscreen : This is where the main class is and the start of the application
+## Homescreen : This is where the main class is and the start of the application
 ![homescreenCode](https://github.com/twentyfive21/accounting-ledger/assets/107441301/d3b9836c-2119-4388-8cfb-7c6b51182c01)
 ## Error handling for homescreen :
 ![homescreen error](https://github.com/twentyfive21/accounting-ledger/assets/107441301/b881e78f-6348-4a45-98af-3869a81af2ab)
-## Exit homscreen :
+## Exit homescreen :
 ![exit homscreen](https://github.com/twentyfive21/accounting-ledger/assets/107441301/9068b0e2-1366-4cff-9021-a90d4e70c03c)
 
 # ~~~~ Interesting piece of code ~~~~ 
